@@ -1,0 +1,15 @@
+.sidebar .sidebar-list li a.active {
+  background-color: #e2e8f0;
+}
+.sidebar .sidebar-list li a.active svg {
+  color: black;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar .sidebar-list li a.active {
+    background-color: #374151;
+  }
+  .sidebar .sidebar-list li a.active svg {
+    color: white;
+  }
+}
