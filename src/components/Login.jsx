@@ -34,6 +34,9 @@ const Login = () => {
           toast.success("Admin Login!");
           localStorage.setItem("token", generateToken());
           localStorage.setItem("role", role);
+          localStorage.setItem("current_user", email);
+          const log_time = new Date().toISOString();
+          localStorage.setItem("logTime", log_time);
           navigate("/dashboard");
           window.location.reload();
         } else {
@@ -48,6 +51,7 @@ const Login = () => {
           toast.success("Designer login!");
           localStorage.setItem("token", generateToken());
           localStorage.setItem("role", role);
+          localStorage.setItem("current_user", email);
           navigate("/");
           window.location.reload();
         } else {

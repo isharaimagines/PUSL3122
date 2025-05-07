@@ -1,0 +1,661 @@
+// import { useState, useEffect, useRef } from "react";
+// import { Canvas, useFrame, useThree } from "@react-three/fiber";
+// import {
+//   OrbitControls,
+//   OrthographicCamera,
+//   PerspectiveCamera,
+//   Box,
+//   Plane,
+//   Text,
+// } from "@react-three/drei";
+// import * as THREE from "three";
+// import { HexColorPicker } from "react-colorful";
+// import Sidebar from "../components/Sidebar";
+
+// const Design2d = () => {
+//   const [viewMode, setViewMode] = useState("2D");
+//   const [roomConfig, setRoomConfig] = useState({
+//     width: 5,
+//     depth: 4,
+//     height: 2.5,
+//     shape: "rectangle",
+//     color: "#ffffff",
+//   });
+//   const [furniture, setFurniture] = useState([]);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [savedDesigns, setSavedDesigns] = useState([]);
+//   const [shadeIntensity, setShadeIntensity] = useState(0.5);
+
+//   // Add furniture item
+//   const addFurniture = (type) => {
+//     const newItem = {
+//       id: Date.now(),
+//       type,
+//       position: [0, 0, 0],
+//       dimensions: getDefaultDimensions(type),
+//       color: "#cccccc",
+//       rotation: 0,
+//     };
+//     setFurniture([...furniture, newItem]);
+//   };
+
+//   // Scale to fit room
+//   const handleScaleToFit = () => {
+//     if (!selectedItem) return;
+
+//     setFurniture((items) =>
+//       items.map((item) => {
+//         if (item.id === selectedItem.id) {
+//           const scaleFactor = Math.min(
+//             roomConfig.width / item.dimensions[0],
+//             roomConfig.depth / item.dimensions[1]
+//           );
+//           return {
+//             ...item,
+//             dimensions: [
+//               item.dimensions[0] * scaleFactor,
+//               item.dimensions[1] * scaleFactor,
+//               item.dimensions[2],
+//             ],
+//           };
+//         }
+//         return item;
+//       })
+//     );
+//   };
+
+//   // Save design
+//   const handleSaveDesign = () => {
+//     const newDesign = {
+//       id: Date.now(),
+//       name: `Design ${savedDesigns.length + 1}`,
+//       roomConfig,
+//       furniture,
+//       timestamp: new Date().toISOString(),
+//     };
+//     setSavedDesigns([...savedDesigns, newDesign]);
+//     // TODO: Save to Firebase
+//   };
+
+//   return (
+//     <>
+//       <Sidebar />
+//       <div className="p-4 sm:ml-64">
+//         <div className="p-4 mt-16">
+//           {/* Control Panel */}
+//           <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+//             <label className="inline-flex items-center cursor-pointer">
+//               <input
+//                 type="checkbox"
+//                 className="sr-only peer"
+//                 checked={viewMode === "3D"}
+//                 onChange={() => setViewMode((m) => (m === "2D" ? "3D" : "2D"))}
+//               />
+//               <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer dark:bg-gray-700 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+//               <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+//                 {viewMode} View
+//               </span>
+//             </label>
+
+//             <RoomConfigurator config={roomConfig} onChange={setRoomConfig} />
+
+//             <FurniturePalette onAdd={addFurniture} />
+//           </div>
+
+//           {/* Design Area */}
+//           <div className="h-[600px] bg-gray-50 rounded-lg overflow-hidden relative">
+//             <Canvas shadows>
+//               <SceneLighting intensity={shadeIntensity} />
+
+//               {viewMode === "2D" ? (
+//                 <OrthographicCamera
+//                   makeDefault
+//                   position={[0, 50, 0]}
+//                   zoom={50}
+//                   rotation={[-Math.PI / 2, 0, 0]}
+//                   near={0.1}
+//                   far={1000}
+//                   left={-roomConfig.width / 2}
+//                   right={roomConfig.width / 2}
+//                   top={roomConfig.depth / 2}
+//                   bottom={-roomConfig.depth / 2}
+//                 />
+//               ) : (
+//                 <PerspectiveCamera
+//                   makeDefault
+//                   position={[10, 10, 10]}
+//                   fov={50}
+//                 />
+//               )}
+
+//               {/* Room for both 2D and 3D mode */}
+//               <Room3D config={roomConfig} />
+
+//               {/* 2D Mode */}
+//               {viewMode === "2D" && (
+//                 <group>
+//                   {furniture.map((item) => (
+//                     <Furniture2D
+//                       key={item.id}
+//                       item={item}
+//                       selected={selectedItem?.id === item.id}
+//                       onClick={() => setSelectedItem(item)}
+//                       onUpdate={(updated) => {
+//                         // Add this prop
+//                         setFurniture((items) =>
+//                           items.map((i) =>
+//                             i.id === item.id ? { ...i, ...updated } : i
+//                           )
+//                         );
+//                       }}
+//                     />
+//                   ))}
+//                 </group>
+//               )}
+
+//               {/* 3D Mode */}
+//               {viewMode === "3D" &&
+//                 furniture.map((item) => (
+//                   <Furniture3D
+//                     key={item.id}
+//                     item={item}
+//                     selected={selectedItem?.id === item.id}
+//                     onClick={() => setSelectedItem(item)}
+//                     onUpdate={(updated) => {
+//                       // Add this prop
+//                       setFurniture((items) =>
+//                         items.map((i) =>
+//                           i.id === item.id ? { ...i, ...updated } : i
+//                         )
+//                       );
+//                     }}
+//                   />
+//                 ))}
+
+//               <OrbitControls makeDefault enableRotate={viewMode === "3D"} />
+//               <gridHelper args={[20, 20]} />
+//             </Canvas>
+//           </div>
+
+//           {/* Properties Panel */}
+//           {selectedItem && (
+//             <PropertiesPanel
+//               item={selectedItem}
+//               onUpdate={(updated) => {
+//                 setFurniture((items) =>
+//                   items.map((i) =>
+//                     i.id === selectedItem.id ? { ...i, ...updated } : i
+//                   )
+//                 );
+//               }}
+//               onScale={handleScaleToFit}
+//               onDelete={() => {
+//                 setFurniture((items) =>
+//                   items.filter((i) => i.id !== selectedItem.id)
+//                 );
+//                 setSelectedItem(null);
+//               }}
+//             />
+//           )}
+
+//           {/* Saved Designs */}
+//           <DesignLibrary
+//             designs={savedDesigns}
+//             onLoad={(design) => {
+//               setRoomConfig(design.roomConfig);
+//               setFurniture(design.furniture);
+//             }}
+//             onDelete={(id) =>
+//               setSavedDesigns((d) => d.filter((design) => design.id !== id))
+//             }
+//           />
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
+
+// // Room Configuration Component
+// const RoomConfigurator = ({ config, onChange }) => (
+//   <div className="grid grid-cols-3 gap-4 mb-4">
+//     <div>
+//       <label className="block text-sm font-medium">Width (m)</label>
+//       <input
+//         type="number"
+//         className="w-full p-2 border rounded"
+//         value={config.width}
+//         onChange={(e) =>
+//           onChange({ ...config, width: parseFloat(e.target.value) })
+//         }
+//       />
+//     </div>
+//     <div>
+//       <label className="block text-sm font-medium">Depth (m)</label>
+//       <input
+//         type="number"
+//         className="w-full p-2 border rounded"
+//         value={config.depth}
+//         onChange={(e) =>
+//           onChange({ ...config, depth: parseFloat(e.target.value) })
+//         }
+//       />
+//     </div>
+//     <div>
+//       <label className="block text-sm font-medium">Shape</label>
+//       <select
+//         className="w-full p-2 border rounded"
+//         value={config.shape}
+//         onChange={(e) => onChange({ ...config, shape: e.target.value })}
+//       >
+//         <option value="rectangle">Rectangle</option>
+//         <option value="square">Square</option>
+//         <option value="L-shape">L-Shape</option>
+//       </select>
+//     </div>
+//   </div>
+// );
+
+// // Furniture Palette Component
+// const FurniturePalette = ({ onAdd }) => (
+//   <div className="flex gap-2">
+//     <button
+//       className="px-4 py-2 bg-gray-200 rounded-lg"
+//       onClick={() => onAdd("chair")}
+//     >
+//       Add Chair
+//     </button>
+//     <button
+//       className="px-4 py-2 bg-gray-200 rounded-lg"
+//       onClick={() => onAdd("table")}
+//     >
+//       Add Table
+//     </button>
+//   </div>
+// );
+
+// // 3D Room Component
+// const Room3D = ({ config }) => (
+//   <group>
+//     {/* Floor */}
+//     <Plane
+//       args={[config.width, config.depth]}
+//       rotation={[-Math.PI / 2, 0, 0]}
+//       position={[0, 0, 0]}
+//       receiveShadow
+//     >
+//       <meshStandardMaterial color={config.color} />
+//     </Plane>
+
+//     {/* Walls */}
+//     <Box
+//       args={[config.width, config.height, 0.1]}
+//       position={[0, config.height / 2, -config.depth / 2]}
+//     >
+//       <meshStandardMaterial color="#e0e0e0" />
+//     </Box>
+//   </group>
+// );
+
+// const Furniture3D = ({ item, selected, onClick }) => {
+//   const meshRef = useRef();
+//   const planeRef = useRef();
+//   const { camera, gl, scene } = useThree();
+//   const [isDragging, setIsDragging] = useState(false);
+//   const offset = useRef(new THREE.Vector3());
+//   const intersection = useRef(new THREE.Vector3());
+//   const raycaster = useRef(new THREE.Raycaster());
+
+//   useEffect(() => {
+//     const domElement = gl.domElement;
+
+//     const getMouseCoords = (event) => {
+//       const rect = domElement.getBoundingClientRect();
+//       return {
+//         x: ((event.clientX - rect.left) / rect.width) * 2 - 1,
+//         y: -((event.clientY - rect.top) / rect.height) * 2 + 1,
+//       };
+//     };
+
+//     const handlePointerMove = (event) => {
+//       if (!isDragging) return;
+
+//       const mouse = getMouseCoords(event);
+//       raycaster.current.setFromCamera(mouse, camera);
+
+//       const intersects = raycaster.current.intersectObject(planeRef.current);
+//       if (intersects.length > 0) {
+//         const newX = intersects[0].point.x - offset.current.x;
+//         const newZ = intersects[0].point.z - offset.current.y;
+
+//         // Update state immediately
+//         onUpdate({
+//           position: [newX, 0, newZ], // Ensure Y is set to 0 for 2D
+//         });
+//       }
+//     };
+
+//     const onPointerUp = () => {
+//       setIsDragging(false);
+//       window.removeEventListener("pointermove", onPointerMove);
+//       window.removeEventListener("pointerup", onPointerUp);
+//     };
+
+//     if (isDragging) {
+//       window.addEventListener("pointermove", onPointerMove);
+//       window.addEventListener("pointerup", onPointerUp);
+//     }
+
+//     return () => {
+//       window.removeEventListener("pointermove", onPointerMove);
+//       window.removeEventListener("pointerup", onPointerUp);
+//     };
+//   }, [isDragging, camera, gl, item]);
+
+//   const onPointerDown = (event) => {
+//     event.stopPropagation();
+//     onClick(); // select the item
+//     const mouse = {
+//       x: (event.clientX / gl.domElement.clientWidth) * 2 - 1,
+//       y: -(event.clientY / gl.domElement.clientHeight) * 2 + 1,
+//     };
+
+//     raycaster.current.setFromCamera(mouse, camera);
+//     const intersects = raycaster.current.intersectObject(planeRef.current);
+//     if (intersects.length > 0 && meshRef.current) {
+//       offset.current.copy(intersects[0].point).sub(meshRef.current.position);
+//       setIsDragging(true);
+//     }
+
+//     if (intersects.length > 0 && meshRef.current) {
+//       offset.current
+//         .copy(intersects[0].point)
+//         .sub(
+//           new THREE.Vector3(
+//             item.position[0],
+//             item.dimensions[2] / 2,
+//             item.position[2]
+//           )
+//         );
+//       setIsDragging(true);
+//     }
+//   };
+
+//   useFrame(() => {
+//     if (meshRef.current) {
+//       meshRef.current.position.set(
+//         item.position[0],
+//         item.dimensions[2] / 2,
+//         item.position[2]
+//       );
+//     }
+//   });
+
+//   return (
+//     <>
+//       {/* Invisible ground plane to receive raycast */}
+//       <mesh
+//         ref={planeRef}
+//         rotation={[-Math.PI / 2, 0, 0]}
+//         position={[0, 0.01, 0]}
+//         visible={false}
+//       >
+//         <planeGeometry args={[100, 100]} />
+//         <meshBasicMaterial visible={false} />
+//       </mesh>
+
+//       <mesh
+//         ref={meshRef}
+//         position={[item.position[0], item.dimensions[2] / 2, item.position[2]]}
+//         rotation={[0, item.rotation, 0]}
+//         scale={[item.dimensions[0], item.dimensions[2], item.dimensions[1]]}
+//         onPointerDown={onPointerDown}
+//         castShadow
+//       >
+//         <Box>
+//           <meshStandardMaterial color={item.color} />
+//         </Box>
+//         {selected && <EditableOutline dimensions={item.dimensions} />}
+//       </mesh>
+//     </>
+//   );
+// };
+
+// // Properties Panel Component
+// const PropertiesPanel = ({ item, onUpdate, onScale, onDelete }) => (
+//   <div className="mt-4 bg-white p-4 rounded-lg shadow-md">
+//     <h3 className="text-lg font-semibold mb-4">Properties</h3>
+
+//     <div className="space-y-4">
+//       <div>
+//         <label className="block text-sm font-medium">Color</label>
+//         <HexColorPicker
+//           color={item.color}
+//           onChange={(color) => onUpdate({ color })}
+//           className="w-full"
+//         />
+//       </div>
+
+//       <div>
+//         <label className="block text-sm font-medium">Position</label>
+//         <div className="grid grid-cols-2 gap-2">
+//           <input
+//             type="number"
+//             value={item.position[0]}
+//             onChange={(e) =>
+//               onUpdate({
+//                 position: [parseFloat(e.target.value), 0, item.position[2]],
+//               })
+//             }
+//           />
+//           <input
+//             type="number"
+//             value={item.position[2]}
+//             onChange={(e) =>
+//               onUpdate({
+//                 position: [item.position[0], 0, parseFloat(e.target.value)],
+//               })
+//             }
+//           />
+//         </div>
+//       </div>
+
+//       <button
+//         className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg"
+//         onClick={onScale}
+//       >
+//         Scale to Fit Room
+//       </button>
+
+//       <button
+//         className="w-full px-4 py-2 bg-red-600 text-white rounded-lg"
+//         onClick={onDelete}
+//       >
+//         Delete Item
+//       </button>
+//     </div>
+//   </div>
+// );
+
+// // Add these missing components at the bottom of your file
+
+// // Scene Lighting Component
+// const SceneLighting = ({ intensity }) => {
+//   return (
+//     <>
+//       <ambientLight intensity={intensity * 0.5} />
+//       <directionalLight
+//         position={[10, 10, 10]}
+//         intensity={intensity}
+//         castShadow
+//         shadow-mapSize-width={2048}
+//         shadow-mapSize-height={2048}
+//       />
+//     </>
+//   );
+// };
+
+// const Furniture2D = ({ item, selected, onClick, onUpdate }) => {
+//   const meshRef = useRef();
+//   const planeRef = useRef();
+//   const { camera, gl } = useThree();
+//   const [isDragging, setIsDragging] = useState(false);
+//   const offset = useRef(new THREE.Vector2());
+//   const raycaster = useRef(new THREE.Raycaster());
+
+//   // Convert screen coords to Three.js NDC
+//   const getMouseCoords = (event) => {
+//     const rect = gl.domElement.getBoundingClientRect();
+//     return {
+//       x: ((event.clientX - rect.left) / rect.width) * 2 - 1,
+//       y: -((event.clientY - rect.top) / rect.height) * 2 + 1,
+//     };
+//   };
+
+//   useFrame(() => {
+//     if (meshRef.current) {
+//       // Directly set position from state without lerp
+//       meshRef.current.position.set(item.position[0], 0.02, item.position[1]);
+//     }
+//   });
+
+//   useEffect(() => {
+//     const handlePointerMove = (event) => {
+//       if (!isDragging) return;
+
+//       const mouse = getMouseCoords(event);
+//       raycaster.current.setFromCamera(mouse, camera);
+
+//       const intersects = raycaster.current.intersectObject(planeRef.current);
+//       if (intersects.length > 0) {
+//         const newX = intersects[0].point.x - offset.current.x;
+//         const newZ = intersects[0].point.z - offset.current.y;
+
+//         // Update state immediately
+//         onUpdate({
+//           position: [newX, newZ],
+//         });
+//       }
+//     };
+
+//     const handlePointerUp = () => {
+//       setIsDragging(false);
+//       window.removeEventListener("pointermove", handlePointerMove);
+//       window.removeEventListener("pointerup", handlePointerUp);
+//     };
+
+//     if (isDragging) {
+//       window.addEventListener("pointermove", handlePointerMove);
+//       window.addEventListener("pointerup", handlePointerUp);
+//     }
+
+//     return () => {
+//       window.removeEventListener("pointermove", handlePointerMove);
+//       window.removeEventListener("pointerup", handlePointerUp);
+//     };
+//   }, [isDragging, camera, onUpdate]);
+
+//   const handlePointerDown = (event) => {
+//     event.stopPropagation();
+//     onClick();
+
+//     const mouse = getMouseCoords(event);
+//     raycaster.current.setFromCamera(mouse, camera);
+
+//     const intersects = raycaster.current.intersectObject(meshRef.current);
+//     if (intersects.length > 0) {
+//       const point = intersects[0].point;
+//       offset.current.set(
+//         point.x - meshRef.current.position.x,
+//         point.z - meshRef.current.position.z
+//       );
+//       setIsDragging(true);
+//     }
+//   };
+
+//   return (
+//     <>
+//       {/* Invisible plane for raycasting */}
+//       <mesh
+//         ref={planeRef}
+//         rotation={[-Math.PI / 2, 0, 0]}
+//         position={[0, 0, 0]}
+//         visible={false}
+//       >
+//         <planeGeometry args={[100, 100]} />
+//         <meshBasicMaterial />
+//       </mesh>
+
+//       {/* Furniture item */}
+//       <mesh
+//         ref={meshRef}
+//         position={[item.position[0], 0.02, item.position[1]]}
+//         rotation={[-Math.PI / 2, 0, 0]}
+//         onPointerDown={handlePointerDown}
+//       >
+//         <planeGeometry args={[item.dimensions[0], item.dimensions[1]]} />
+//         <meshStandardMaterial color={item.color} />
+
+//         {selected && (
+//           <gridHelper
+//             args={[item.dimensions[0], 1, item.dimensions[1], 1]}
+//             material={new THREE.LineBasicMaterial({ color: "orange" })}
+//           />
+//         )}
+//       </mesh>
+//     </>
+//   );
+// };
+
+// // Design Library Component
+// const DesignLibrary = ({ designs, onLoad, onDelete }) => {
+//   return (
+//     <div className="mt-4 bg-white p-4 rounded-lg shadow-md">
+//       <h3 className="text-lg font-semibold mb-4">Saved Designs</h3>
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+//         {designs.map((design) => (
+//           <div key={design.id} className="border p-4 rounded-lg">
+//             <h4 className="font-medium">{design.name}</h4>
+//             <p className="text-sm text-gray-500">
+//               {new Date(design.timestamp).toLocaleDateString()}
+//             </p>
+//             <div className="flex gap-2 mt-2">
+//               <button
+//                 className="text-blue-600 text-sm"
+//                 onClick={() => onLoad(design)}
+//               >
+//                 Load
+//               </button>
+//               <button
+//                 className="text-red-600 text-sm"
+//                 onClick={() => onDelete(design.id)}
+//               >
+//                 Delete
+//               </button>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// // Utility to get default dimensions for furniture
+// const getDefaultDimensions = (type) => {
+//   switch (type) {
+//     case "chair":
+//       return [0.5, 0.5, 1];
+//     case "table":
+//       return [1, 1, 0.75];
+//     default:
+//       return [1, 1, 1];
+//   }
+// };
+
+// // Editable outline for selected items (visual feedback)
+// const EditableOutline = ({ dimensions }) => (
+//   <Box args={dimensions} position={[0, 0, 0]} renderOrder={1}>
+//     <meshBasicMaterial color="orange" wireframe />
+//   </Box>
+// );
+
+// export default Design2d;

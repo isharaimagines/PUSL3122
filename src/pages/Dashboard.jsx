@@ -1,9 +1,88 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import { useNavigate } from "react-router-dom";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../firebase-config";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [role, setRole] = useState(localStorage.getItem("role"));
+  const [timeAgo, setTimeAgo] = useState("");
+
+  const navigate = useNavigate();
+
+  const [designs, setDesigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [current_user, setCurrentUser] = useState(
+    localStorage.getItem("current_user")
+  );
+
+  const [countDesign, setCountDesign] = useState(0);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const querySnapshot = await getDocs(collection(db, "designs"));
+      setCountDesign(querySnapshot.size);
+    };
+    fetchCount();
+  }, []);
+
+  useEffect(() => {
+    const logTime = localStorage.getItem("logTime");
+    if (logTime) {
+      const past = new Date(logTime);
+      const now = new Date();
+      const diffMs = now - past;
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHr = Math.floor(diffMin / 60);
+      const diffDay = Math.floor(diffHr / 24);
+
+      if (diffDay >= 1) {
+        setTimeAgo(`${diffDay} day${diffDay > 1 ? "s" : ""} ago`);
+      } else if (diffHr >= 1) {
+        setTimeAgo(`${diffHr} hour${diffHr > 1 ? "s" : ""} ago`);
+      } else if (diffMin >= 1) {
+        setTimeAgo(`${diffMin} minute${diffMin > 1 ? "s" : ""} ago`);
+      } else {
+        setTimeAgo("just now");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchDesigns = async () => {
+      try {
+        const q = query(collection(db, "designs"));
+        const querySnapshot = await getDocs(q);
+        const designsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setDesigns(designsData);
+      } catch (err) {
+        setError("Failed to fetch designs");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDesigns();
+  }, []);
+
+  if (error) {
+    toast.info(error);
+    return;
+  }
 
   useEffect(() => {
     if (token) {
@@ -41,8 +120,10 @@ const Dashboard = () => {
                   Total Design
                 </h3>
               </div>
-              <p className="text-3xl font-bold text-gray-800">248</p>
-              <p className="mt-2 text-sm text-gray-500">+12% from last month</p>
+              <p className="text-3xl font-bold text-gray-800">{countDesign}</p>
+              <p className="mt-2 text-sm text-gray-500">
+                +{Math.floor(Math.random() * 15) + 1}% from last
+              </p>
             </div>
           </div>
 
@@ -72,7 +153,7 @@ const Dashboard = () => {
               </div>
               <p className="text-3xl font-bold text-gray-800">1,429</p>
               <p className="mt-2 text-sm text-gray-500">
-                +8.1% from last month
+                +{Math.floor(Math.random() * 15) + 1}% from last
               </p>
             </div>
           </div>
@@ -109,8 +190,9 @@ const Dashboard = () => {
                   Full Access
                 </span>
               </div>
+
               <p className="mt-2 text-sm text-gray-500">
-                Last login: 2 hours ago
+                Last login: {timeAgo}
               </p>
             </div>
           </div>
@@ -151,13 +233,67 @@ const Dashboard = () => {
 
             {/* Design Items */}
             <div className="divide-y divide-gray-200">
-              {/* Design Item 1 */}
-              <div className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
-                <div className="w-full md:w-4/12 mb-2 md:mb-0">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+              {designs.map((design) => (
+                <div
+                  key={design.id}
+                  className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 hover:bg-gray-50 transition-colors duration-150"
+                >
+                  <div className="w-full md:w-4/12 mb-2 md:mb-0">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg
+                          className="w-6 h-6 text-blue-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                          ></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-base font-medium text-gray-900">
+                          {design.projectName || "Untitled Project"}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          Project ID: #{design.id}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="w-full md:w-3/12 mb-2 md:mb-0">
+                    <div className="text-sm text-gray-900">
+                      {new Date(
+                        design.createdAt?.seconds * 1000
+                      ).toLocaleDateString()}
+                    </div>
+                    <div className="text-sm text-gray-500">{`${Math.floor(
+                      (Date.now() - design.createdAt?.seconds * 1000) /
+                        (1000 * 60 * 60 * 24)
+                    )} days ago`}</div>{" "}
+                  </div>
+
+                  <div className="w-full md:w-3/12 mb-2 md:mb-0">
+                    <span
+                      className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ${
+                        design.published
+                          ? "bg-green-200 text-green-900"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {design.published ? "Published" : "Save"}
+                    </span>
+                  </div>
+
+                  <div className="w-full md:w-2/12">
+                    <button className="flex items-center text-indigo-600 hover:text-indigo-900">
                       <svg
-                        className="w-6 h-6 text-blue-600"
+                        className="w-5 h-5 mr-1"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -166,76 +302,14 @@ const Dashboard = () => {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth="2"
-                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                         ></path>
                       </svg>
-                    </div>
-                    <div>
-                      <div className="text-base font-medium text-gray-900">
-                        Modern Living Room
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Project ID: #DSGN-001
-                      </div>
-                    </div>
+                      Edit
+                    </button>
                   </div>
                 </div>
-
-                <div className="w-full md:w-3/12 mb-2 md:mb-0">
-                  <div className="text-sm text-gray-900">2023-08-15</div>
-                  <div className="text-sm text-gray-500">2 days ago</div>
-                </div>
-
-                <div className="w-full md:w-3/12 mb-2 md:mb-0">
-                  <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    Published
-                  </span>
-                </div>
-
-                <div className="w-full md:w-2/12">
-                  <button className="flex items-center text-indigo-600 hover:text-indigo-900">
-                    <svg
-                      className="w-5 h-5 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                      ></path>
-                    </svg>
-                    Edit
-                  </button>
-                </div>
-              </div>
-
-              {/* Design Item 2 - Add similar structure with different status */}
-              {/* Design Item 3 - Add similar structure */}
-
-              {/* Example of different status */}
-              <div className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
-                {/* ... Similar structure as above ... */}
-                <div className="w-full md:w-3/12 mb-2 md:mb-0">
-                  <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                    In Review
-                  </span>
-                </div>
-                {/* ... */}
-              </div>
-
-              {/* Example of draft status */}
-              <div className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
-                {/* ... Similar structure as above ... */}
-                <div className="w-full md:w-3/12 mb-2 md:mb-0">
-                  <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                    Draft
-                  </span>
-                </div>
-                {/* ... */}
-              </div>
+              ))}
             </div>
 
             {/* Pagination/Footer */}

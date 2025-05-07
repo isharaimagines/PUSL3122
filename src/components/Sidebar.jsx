@@ -1,14 +1,19 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/img/icons8-furniture-100.png";
 import React, { useState, useEffect } from "react";
 
 const Sidebar = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [role, setRole] = useState(localStorage.getItem("role"));
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    localStorage.removeItem("projectId");
+    localStorage.removeItem("ProjectName");
+    localStorage.removeItem("current_user");
+    navigate("/");
     window.location.reload();
   };
 
@@ -150,8 +155,8 @@ const Sidebar = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <NavLink
+                    to="/design2d"
                     className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-slate-200 dark:hover:bg-gray-700 group"
                   >
                     <svg
@@ -162,30 +167,17 @@ const Sidebar = () => {
                     >
                       <path d="M9.24264 18.9967H21V20.9967H3V16.754L12.8995 6.85453L17.1421 11.0972L9.24264 18.9967ZM14.3137 5.44032L16.435 3.319C16.8256 2.92848 17.4587 2.92848 17.8492 3.319L20.6777 6.14743C21.0682 6.53795 21.0682 7.17112 20.6777 7.56164L18.5563 9.68296L14.3137 5.44032Z"></path>
                     </svg>
-                    <span className="ms-3">Create 2D Design</span>
-                  </a>
+                    <span className="ms-3">Create Design</span>
+                  </NavLink>
                 </li>
+              </>
+            )}
 
+            {role === "admin" ? (
+              <>
                 <li>
-                  <a
-                    href="#"
-                    className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-slate-200 dark:hover:bg-gray-700 group"
-                  >
-                    <svg
-                      className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M20.5021 5.92225 12 1 3.49793 5.92225 12 10.8445 20.5021 5.92225ZM2.5 7.6555V17.5L11 22.4211V12.5765L2.5 7.6555ZM13 22.4211 21.5 17.5V7.6555L13 12.5765V22.4211Z"></path>
-                    </svg>
-                    <span className="ms-3">Create 3D Design</span>
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href="#"
+                  <NavLink
+                    to="/library"
                     className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-slate-200 dark:hover:bg-gray-700 group"
                   >
                     <svg
@@ -197,28 +189,7 @@ const Sidebar = () => {
                       <path d="M4 3C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21H14C14.5523 21 15 20.5523 15 20V10.6973L17.0215 20.2076C17.1363 20.7479 17.6673 21.0927 18.2075 20.9779L21.142 20.3541C21.6822 20.2393 22.027 19.7083 21.9122 19.1681L19.0015 5.47402C18.8866 4.9338 18.3556 4.58896 17.8154 4.70378L15 5.30221V5C15 4.44772 14.5523 4 14 4H9C9 3.44772 8.55228 3 8 3H4ZM9 6H13V14H9V6ZM13 16V19H9V16H13ZM7 17V19H5V17H7ZM18.7699 18.8137L18.3541 16.8577L19.3323 16.6498L19.748 18.6058L18.7699 18.8137Z"></path>
                     </svg>
                     <span className="ms-3">Furniture Library</span>
-                  </a>
-                </li>
-              </>
-            )}
-
-            {role === "admin" ? (
-              <>
-                <li>
-                  <a
-                    href="#"
-                    className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-slate-200 dark:hover:bg-gray-700 group"
-                  >
-                    <svg
-                      className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M12 12.5858L16.2426 16.8284L14.8284 18.2426L13 16.415V22H11V16.413L9.17157 18.2426L7.75736 16.8284L12 12.5858ZM12 2C15.5934 2 18.5544 4.70761 18.9541 8.19395C21.2858 8.83154 23 10.9656 23 13.5C23 16.3688 20.8036 18.7246 18.0006 18.9776L18 17C18 13.6863 15.3137 11 12 11C8.7616 11 6.12243 13.5656 6.00414 16.7751L6 17L6.00039 18.9776C3.19696 18.7252 1 16.3692 1 13.5C1 10.9656 2.71424 8.83154 5.04648 8.19411C5.44561 4.70761 8.40661 2 12 2Z"></path>
-                    </svg>
-                    <span className="ms-3">Upload Models</span>
-                  </a>
+                  </NavLink>
                 </li>
 
                 <li>
