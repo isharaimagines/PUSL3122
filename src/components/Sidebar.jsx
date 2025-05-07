@@ -170,6 +170,23 @@ const Sidebar = () => {
                     <span className="ms-3">Create Design</span>
                   </NavLink>
                 </li>
+
+                <li>
+                  <NavLink
+                    to="/design3dview"
+                    className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-slate-200 dark:hover:bg-gray-700 group"
+                  >
+                    <svg
+                      className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 1L21.5 6.5V17.5L12 23L2.5 17.5V6.5L12 1ZM4.5 7.65788V16.3469L12 20.689V12L4.5 7.65788Z"></path>
+                    </svg>
+                    <span className="ms-3">Create 3D View</span>
+                  </NavLink>
+                </li>
               </>
             )}
 

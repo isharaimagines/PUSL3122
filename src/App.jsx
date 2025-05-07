@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import Mydesign from "./pages/Mydesign";
 import Design2d from "./pages/Design2d";
 import Library from "./pages/Library";
+import View3d from "./pages/View3d";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/mydesign" element={<Mydesign />} />
         <Route path="/design2d" element={<Design2d />} />
+        <Route path="/design3dview" element={<View3d />} />
         <Route path="/library" element={<Library />} />
 
         {/*
