@@ -8,6 +8,9 @@ import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import * as THREE from "three";
 import { Vector3, DoubleSide } from "three";
 
+import { db } from "../firebase-config";
+import { collection, getDocs } from "firebase/firestore";
+
 function SceneObject({ object, selected, onClick, position }) {
   return (
     <group
@@ -47,7 +50,32 @@ function ControlsPanel({
   onWallColorChange,
   onFloorColorChange,
   onScaleChange,
+  onAddModelFromUrl,
 }) {
+  const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "models"));
+        const modelsList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().name,
+          url: doc.data().modelURL,
+        }));
+        setModels(modelsList);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchModels();
+  }, []);
+
   return (
     <div className="absolute right-0 top-16 p-5 z-10 max-w-xs w-full space-y-6">
       {/* Main Controls Card */}
@@ -63,17 +91,53 @@ function ControlsPanel({
               <i class="ri-add-large-fill text-xl"></i>
               Add Box
             </button>
-            <button
-              onClick={onAddModel}
-              className="bg-purple-400 hover:bg-purple-500 text-white p-3 rounded-lg flex items-center justify-center gap-2 transition-all"
+            {/* <button
+              onClick={() =>
+                onAddModelFromUrl(
+                  ""
+                )
+              }
+              className="bg-yellow-400 hover:bg-yellow-500 text-white p-3 rounded-lg flex items-center justify-center gap-2 transition-all"
             >
-              <i class="ri-add-large-fill text-xl"></i>
-              Add Model
-            </button>
+              Load Model from URL
+            </button> */}
+
+            <div className="bg-gray-50 rounded-xl">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">
+                Available Furniture
+              </h2>
+
+              {loading ? (
+                <div className="flex justify-center py-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+                </div>
+              ) : error ? (
+                <div className="text-red-500 p-3 bg-red-50 rounded-lg">
+                  {error}
+                </div>
+              ) : (
+                <div className="grid grid-row-1">
+                  {models.map((model) => (
+                    <button
+                      key={model.id}
+                      onClick={() => onAddModelFromUrl(model.url)}
+                      className="bg-green-400 hover:bg-green-500 text-white p-3 rounded-lg flex items-center justify-center gap-2 transition-all mb-2"
+                    >
+                      <span className="truncate">{model.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {!loading && !error && models.length === 0 && (
+                <div className="text-center py-4 text-gray-500">
+                  No models found in the library
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           <h2 className="text-lg font-bold text-gray-800">3D Models</h2>
           <div className="relative">
             <input
@@ -91,7 +155,7 @@ function ControlsPanel({
               Upload OBJ Model
             </button>
           </div>
-        </div>
+        </div> */}
         {/* Workspace Dimensions */}
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
@@ -175,7 +239,7 @@ function ControlsPanel({
               step="0.01"
               min="0.01"
               max="1"
-              value={selectedObject.scale?.[0] ?? 1}
+              value={selectedObject.scale?.[0] ?? 0.01}
               onChange={(e) => onScaleChange(e.target.value)}
               className="w-full px-2 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-blue-500"
             />
@@ -311,6 +375,18 @@ const View3d = () => {
     ]);
   };
 
+  const addModelFromUrl = (objUrl, mtlUrl = "") => {
+    const newObject = {
+      id: Math.random().toString(36).substr(2, 9),
+      type: "obj",
+      position: [0, 0, 0],
+      objUrl,
+      mtlUrl,
+      scale: [1, 1, 1], // Default scale
+    };
+    setObjects((prev) => [...prev, newObject]);
+  };
+
   const handlePositionChange = (axis, value) => {
     setObjects(
       objects.map((obj) => {
@@ -381,9 +457,10 @@ const View3d = () => {
               onWallColorChange={setWallColor}
               onFloorColorChange={setFloorColor}
               onScaleChange={handleScaleChange}
+              onAddModelFromUrl={addModelFromUrl}
             />
 
-            <div className="w-[70%] h-[600px] m-2 border ">
+            <div className="fixed left-64 top-20 w-[70%] h-[600px] m-2 border ">
               <Canvas camera={{ position: [20, 20, 20], fov: 30 }}>
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />

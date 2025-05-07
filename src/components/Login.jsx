@@ -139,6 +139,58 @@ const Login = () => {
                     </button>
                   </div>
                 </form>
+
+                <div className="max-w-xl mx-auto mt-2 p-6 bg-slate-400 shadow-lg rounded-md">
+                  <h2 className="text-xl font-bold text-gray-800 mb-4">
+                    🔐 Default Credentials
+                  </h2>
+
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-blue-700 ">
+                      Admin
+                      <code className="bg-gray-100 text-blue-700 px-1 py-0.5 rounded mx-1">
+                        admin
+                      </code>
+                    </h3>
+                    <ul className="text-sm text-gray-700 space-y-1 pl-4 list-disc">
+                      <li>
+                        <strong>Email:</strong>{" "}
+                        <code className="bg-gray-100 px-1 py-0.5 rounded">
+                          admin@gmail.com
+                        </code>
+                      </li>
+                      <li>
+                        <strong>Password:</strong>{" "}
+                        <code className="bg-gray-100 px-1 py-0.5 rounded">
+                          123@qwe
+                        </code>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold text-green-700">
+                      Designer
+                      <code className="bg-gray-100 text-green-700 px-1 py-0.5 rounded mx-1">
+                        designer
+                      </code>
+                    </h3>
+                    <ul className="text-sm text-gray-700 space-y-1 pl-4 list-disc">
+                      <li>
+                        <strong>Email:</strong>{" "}
+                        <code className="bg-gray-100 px-1 py-0.5 rounded">
+                          designer@gmail.com
+                        </code>
+                      </li>
+                      <li>
+                        <strong>Password:</strong>{" "}
+                        <code className="bg-gray-100 px-1 py-0.5 rounded">
+                          123123@qwe
+                        </code>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
