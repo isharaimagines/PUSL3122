@@ -8,13 +8,15 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "test:integration": "vitest run"
   },
   "dependencies": {
     "@react-three/drei": "^10.0.7",
     "@react-three/fiber": "^9.1.2",
     "axios": "^1.9.0",
     "cloudinary": "^2.6.1",
+    "cypress": "^14.3.3",
     "drei": "^2.2.21",
     "firebase": "^11.6.1",
     "mongodb": "^6.16.0",
