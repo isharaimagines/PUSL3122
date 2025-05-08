@@ -65,7 +65,7 @@ const ItemShop = () => {
           <h1 className="text-3xl font-bold text-gray-800 mb-8">
             Furniture Marketplace
           </h1>
-
+          <h1 className="text-transparent">itemshop</h1>
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>

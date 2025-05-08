@@ -85,7 +85,7 @@ const Mydesign = () => {
               Create New
             </button>
           </div>
-          {/* Section Header */}
+
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold text-gray-800">
               Design Projects
@@ -108,7 +108,6 @@ const Mydesign = () => {
             </button>
           </div>
 
-          {/* Design List */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             {/* Table Header */}
             <div className="hidden md:flex bg-gray-50 px-6 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider">
@@ -118,7 +117,6 @@ const Mydesign = () => {
               <div className="w-[8%]">Actions</div>
             </div>
 
-            {/* Design Items */}
             <div className="divide-y divide-gray-200">
               {designs.map((design) => (
                 <div

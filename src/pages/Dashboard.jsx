@@ -114,11 +114,11 @@ const Dashboard = () => {
       <Sidebar />
       <div className="p-4 sm:ml-64">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-16">
-          {/* Card 1: Total Design */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <div className="p-6">
               <div className="flex items-center mb-4">
                 <div className="p-3 rounded-full bg-blue-100">
+                  <h1 className="text-transparent">dashboard</h1>
                   <svg
                     className="w-6 h-6 text-blue-600"
                     fill="none"
@@ -145,7 +145,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Card 2: Available Furniture Count */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <div className="p-6">
               <div className="flex items-center mb-4">
@@ -176,7 +175,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Card 2: Available Furniture Count */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <div className="p-6">
               <div className="flex items-center mb-4">
@@ -201,7 +199,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Card 3: User Role */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <div className="p-6">
               <div className="flex items-center mb-4">
@@ -241,7 +238,6 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="p-4 mt-8">
-          {/* Section Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold text-gray-800">
               Design Projects
@@ -264,9 +260,7 @@ const Dashboard = () => {
             </button>
           </div>
 
-          {/* Design List */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            {/* Table Header */}
             <div className="hidden md:flex bg-gray-50 px-6 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider">
               <div className="w-4/12">Design Name</div>
               <div className="w-3/12">Last Modified</div>
@@ -274,7 +268,6 @@ const Dashboard = () => {
               <div className="w-2/12">Actions</div>
             </div>
 
-            {/* Design Items */}
             <div className="divide-y divide-gray-200">
               {designs.map((design) => (
                 <div
@@ -357,7 +350,6 @@ const Dashboard = () => {
               ))}
             </div>
 
-            {/* Pagination/Footer */}
             <div className="px-6 py-4 border-t border-gray-200">
               <div className="flex justify-center items-center">
                 <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 rounded-lg border border-gray-300">

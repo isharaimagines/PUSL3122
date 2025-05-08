@@ -78,9 +78,7 @@ function ControlsPanel({
 
   return (
     <div className="absolute right-0 top-16 p-5 z-10 max-w-xs w-full space-y-6">
-      {/* Main Controls Card */}
       <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl p-6 space-y-6 border border-gray-100">
-        {/* Add Objects Section */}
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-gray-800">3D Item</h2>
           <div className="grid grid-row-2 gap-3">
@@ -156,7 +154,7 @@ function ControlsPanel({
             </button>
           </div>
         </div> */}
-        {/* Workspace Dimensions */}
+
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
             Room Dimensions
@@ -179,7 +177,7 @@ function ControlsPanel({
             ))}
           </div>
         </div>
-        {/* Color Controls */}
+
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
             Color Palette
@@ -205,7 +203,7 @@ function ControlsPanel({
             </div>
           </div>
         </div>
-        {/* Position Controls */}
+
         {selectedObject && (
           <>
             <div className="space-y-4 pt-4 border-t border-gray-200">
@@ -233,7 +231,6 @@ function ControlsPanel({
               </div>
             </div>
 
-            {/* Replace the single scale input with axis-based controls */}
             <input
               type="number"
               step="0.01"
@@ -253,13 +250,11 @@ function ControlsPanel({
 function Room({ dimensions, wallColor, floorColor }) {
   return (
     <>
-      {/* Floor */}
       <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[dimensions.width, dimensions.depth]} />
         <meshStandardMaterial color={floorColor} side={DoubleSide} />
       </mesh>
 
-      {/* Walls (update all wall materials) */}
       <mesh position={[0, dimensions.height / 2, -dimensions.depth / 2]}>
         <planeGeometry args={[dimensions.width, dimensions.height]} />
         <meshStandardMaterial color={wallColor} side={DoubleSide} />
@@ -287,22 +282,16 @@ function Room({ dimensions, wallColor, floorColor }) {
 function ObjModel({ objUrl, mtlUrl, position, scale }) {
   const obj = useLoader(OBJLoader, objUrl);
 
-  // Only load MTL if mtlUrl exists
-  const materials = useLoader(
-    MTLLoader,
-    mtlUrl || "" // Fallback to empty string instead of null
-  );
+  const materials = useLoader(MTLLoader, mtlUrl || "");
 
   useEffect(() => {
     if (materials && mtlUrl) {
-      // Set materials only if loaded successfully
       obj.traverse((child) => {
         if (child.isMesh) {
           child.material = materials.materials[child.material.name];
         }
       });
     } else {
-      // Apply default material if no MTL
       obj.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshStandardMaterial({
@@ -327,11 +316,10 @@ const View3d = () => {
     depth: 15,
     height: 6,
   });
-  // Add color states
+
   const [wallColor, setWallColor] = useState("#add8e6");
   const [floorColor, setFloorColor] = useState("#808080");
 
-  // Add workspace handler
   const handleWorkspaceChange = (type, value) => {
     setWorkspaceDimensions((prev) => ({
       ...prev,
@@ -352,17 +340,14 @@ const View3d = () => {
     const objFile = files.find((f) => f.name.endsWith(".obj"));
     const mtlFile = files.find((f) => f.name.endsWith(".mtl"));
 
-    // Validate OBJ file exists
     if (!objFile) {
       alert("Please select an OBJ file");
       return;
     }
 
-    // Create safe URLs
     const objUrl = URL.createObjectURL(objFile);
     const mtlUrl = mtlFile ? URL.createObjectURL(mtlFile) : "";
 
-    // Add to state
     setObjects([
       ...objects,
       {
@@ -370,7 +355,7 @@ const View3d = () => {
         type: "obj",
         position: [0, 0, 0],
         objUrl,
-        mtlUrl, // Will be empty string if no MTL
+        mtlUrl,
       },
     ]);
   };
@@ -382,7 +367,7 @@ const View3d = () => {
       position: [0, 0, 0],
       objUrl,
       mtlUrl,
-      scale: [1, 1, 1], // Default scale
+      scale: [1, 1, 1],
     };
     setObjects((prev) => [...prev, newObject]);
   };
@@ -414,7 +399,6 @@ const View3d = () => {
 
   const selectedObject = objects.find((obj) => obj.id === selectedId);
 
-  // Add this useEffect in your View3d component
   useEffect(() => {
     return () => {
       objects.forEach((obj) => {
@@ -486,14 +470,12 @@ const View3d = () => {
                   />
                 ))}
 
-                {/* Dynamic Room */}
                 <Room
                   dimensions={workspaceDimensions}
                   wallColor={wallColor}
                   floorColor={floorColor}
                 />
 
-                {/* Update grid helper to match dimensions */}
                 <gridHelper
                   args={[workspaceDimensions.width, workspaceDimensions.depth]}
                 />

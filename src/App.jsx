@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import Dashboard from "./pages/Dashboard";
 import Login from "./components/Login";
 import Mydesign from "./pages/Mydesign";

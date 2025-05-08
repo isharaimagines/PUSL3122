@@ -53,22 +53,19 @@ const ModelPreview = ({ modelUrl }) => {
       loader.load(
         modelUrl,
         (obj) => {
-          // Center the model
           const box = new THREE.Box3().setFromObject(obj);
           const size = box.getSize(new THREE.Vector3());
           const center = box.getCenter(new THREE.Vector3());
 
           obj.position.sub(center);
 
-          // Scale to fit
           const maxDim = Math.max(size.x, size.y, size.z);
-          const scale = 0.3; // Adjust if needed
+          const scale = 0.3;
           obj.scale.setScalar(scale);
 
           scene.add(obj);
 
-          // Zoom out slightly by moving the camera farther
-          camera.position.set(0, 0, 0); // increase Z for zoom out
+          camera.position.set(0, 0, 0);
           controls.update();
 
           animate();

@@ -54,19 +54,16 @@ const AddToSell = () => {
     }
 
     try {
-      // Add to sells collection
       await addDoc(collection(db, "sells"), {
         ...formData[modelId],
         modelId,
         timestamp: new Date(),
       });
 
-      // Update model's addsell status
       await updateDoc(doc(db, "models", modelId), {
         addSell: true,
       });
 
-      // Remove from local state
       setModels((prev) => prev.filter((model) => model.id !== modelId));
       toast.success("Item added to sell successfully!");
     } catch (err) {

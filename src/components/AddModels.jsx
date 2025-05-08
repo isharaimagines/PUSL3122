@@ -51,7 +51,6 @@ const AddModels = () => {
       );
       const imageData = await imageRes.json();
 
-      // Save metadata to Firebase
       await addDoc(collection(db, "models"), {
         name: modelName,
         type: modelType,

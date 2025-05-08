@@ -87,6 +87,7 @@ const Login = () => {
                 Welcome back
               </h1>
               <p className="dark:text-white">
+                <h1 className="text-transparent">login</h1>
                 Start your Furniture Planner in seconds.{" "}
                 <Link className="text-blue-500 hover:underline">
                   All in one stage

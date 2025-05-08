@@ -20,7 +20,6 @@ const API_SECRET = import.meta.env.VITE_APP_CLOUDINARY_API_SECRET;
 export default function Design2d() {
   const canvasRef = useRef(null);
 
-  // Project info
   const [projectName, setProjectName] = useState(
     localStorage.getItem("ProjectName")
   );
@@ -30,17 +29,15 @@ export default function Design2d() {
   const [projectId, setProjectId] = useState(localStorage.getItem("projectId"));
   const [projectNameInput, setProjectNameInput] = useState("");
 
-  // Design state
-  const [images, setImages] = useState([]); // {src, x, y, scale, public_id}
+  const [images, setImages] = useState([]);
   const [bgColor, setBgColor] = useState("#ffffff");
-  const [bgImage, setBgImage] = useState(null); // { url, public_id }
+  const [bgImage, setBgImage] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [canvasWidth, setCanvasWidth] = useState(800);
   const [canvasHeight, setCanvasHeight] = useState(600);
 
-  // Saving status
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
 
@@ -85,7 +82,6 @@ export default function Design2d() {
     }
   }
 
-  // Handle furniture image upload: upload to Cloudinary and add image data state
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -106,7 +102,6 @@ export default function Design2d() {
     }
   };
 
-  // Handle background image upload: upload to Cloudinary and set bgImage state
   const handleBgImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -118,7 +113,6 @@ export default function Design2d() {
     }
   };
 
-  // Drag and interaction handlers
   const handleSelect = (index, e) => {
     const image = images[index];
     const rect = canvasRef.current.getBoundingClientRect();
@@ -179,7 +173,6 @@ export default function Design2d() {
     setSelectedImageIndex(null);
   };
 
-  // Save Design into Firestore - create new or update existing project
   const saveDesign = async () => {
     if (!projectId) {
       toast.error("No project ID, please set project name first.");
@@ -189,7 +182,6 @@ export default function Design2d() {
     setSaveMessage("");
 
     try {
-      // Prepare images data
       const imagesData = images.map(({ src, x, y, scale, public_id }) => ({
         src,
         x,
@@ -220,7 +212,6 @@ export default function Design2d() {
     setIsSaving(false);
   };
 
-  // Initial project creation after user submits project name
   const createProject = async () => {
     const trimmedName = projectNameInput.trim();
     if (!trimmedName) {
@@ -266,10 +257,7 @@ export default function Design2d() {
     toast.success("Exiting design");
     window.location.reload();
   };
-  // Effect to load project data if projectId is set (optional for future editing existing project)
-  // Currently not loading on mount, but can be implemented if needed.
 
-  // UI: Show project name input if no projectId, else show design UI
   if (!projectId) {
     return (
       <>
@@ -309,7 +297,6 @@ export default function Design2d() {
     );
   }
 
-  // Main design UI after projectId is set
   return (
     <>
       <Sidebar />
@@ -326,7 +313,6 @@ export default function Design2d() {
             </header>
             <div className="bg-gradient-to-br from-gray-50 to-gray-200 p-6 rounded-xl shadow-lg border border-gray-200">
               <div className="grid grid-cols-1 items-center justify-center md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                {/* Background Color Picker */}
                 <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                   <label
                     htmlFor="bg-color"
@@ -348,7 +334,6 @@ export default function Design2d() {
                   </div>
                 </div>
 
-                {/* File Uploads with Icons */}
                 {[
                   {
                     id: "bg-image",
@@ -401,7 +386,6 @@ export default function Design2d() {
                   </div>
                 ))}
 
-                {/* Canvas Dimensions */}
                 <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Canvas Size
@@ -430,7 +414,6 @@ export default function Design2d() {
                   </div>
                 </div>
 
-                {/* Save Button with Status */}
                 <div className="md:col-span-2 lg:col-span-1 flex flex-col justify-end h-full">
                   <button
                     onClick={saveDesign}
@@ -445,7 +428,6 @@ export default function Design2d() {
                   </button>
                 </div>
 
-                {/* Save Button with Status */}
                 <div className="md:col-span-2 lg:col-span-1 flex flex-col justify-end h-full">
                   <button
                     onClick={exittheDesign}
@@ -460,7 +442,6 @@ export default function Design2d() {
             {selectedImageIndex !== null && (
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl shadow-lg border border-gray-200 mt-4 backdrop-blur-sm">
                 <div className="flex flex-col md:flex-row items-center gap-3">
-                  {/* Zoom In Button */}
                   <button
                     onClick={() => handleScale(1.1)}
                     className="h-12 w-12 bg-blue-600 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 group"
@@ -471,7 +452,6 @@ export default function Design2d() {
                     </span>
                   </button>
 
-                  {/* Zoom Out Button */}
                   <button
                     onClick={() => handleScale(0.9)}
                     className="h-12 w-12 bg-blue-400 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 group"
@@ -482,7 +462,6 @@ export default function Design2d() {
                     </span>
                   </button>
 
-                  {/* Delete Button */}
                   <button
                     onClick={handleDelete}
                     className="h-12 w-12 bg-red-500 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 group hover:animate-shake"
@@ -493,7 +472,6 @@ export default function Design2d() {
                     </span>
                   </button>
 
-                  {/* Deselect Button */}
                   <button
                     onClick={selectBackground}
                     className="p-3 bg-purple-500 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 group"
