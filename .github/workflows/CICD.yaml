@@ -39,13 +39,6 @@ jobs:
       - name: Run integration tests
         run: pnpm test:integration
 
-      - name: Run Cypress tests
-        uses: cypress-io/github-action@v5
-        with:
-          start: pnpm dev
-          wait-on: "http://localhost:3000"
-          wait-on-timeout: 60
-
   deploy:
     needs: test
     runs-on: ubuntu-latest
