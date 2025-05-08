@@ -41,7 +41,7 @@ A modern web platform for uploading, managing, and selling Furniture with real-t
 
    ```bash
    git clone https://github.com/isharaimagines/PUSL3122.git
-   cd PUSL3122
+   cd ./PUSL3122
    ```
 
 2. **Install Dependencies**
@@ -88,8 +88,10 @@ npm run dev
 ├── src/
 │   ├── components/      # Reusable components
 │   ├── pages/           # Application pages
+│   ├── test/            # test setup
 │   ├── firebase-config.js  # Firebase configuration
 │   ├── assets/          # Static assets
+│   ├── App.test.jsx     # App test page
 │   |── App.jsx          # Routes and Notification config component
 │   └── main.jsx         # Main application component
 ├── public/              # Static public files
@@ -106,35 +108,37 @@ npm run dev
 
 ### Core Dependencies
 
-- `@react-three/drei`: "^10.0.7",
-- `@react-three/fiber`: "^9.1.2",
-- `axios`: "^1.9.0",
-- `cloudinary`: "^2.6.1",
-- `drei`: "^2.2.21",
-- `firebase`: "^11.6.1",
-- `mongodb`: "^6.16.0",
-- `react`: "^19.1.0",
-- `react-colorful`: "^5.6.1",
-- `react-dom`: "^19.1.0",
-- `react-dropzone`: "^14.3.8",
-- `react-router-dom`: "^7.5.3",
-- `react-toastify`: "^11.0.5",
+- `@react-three/drei`: "^10.0.7"
+- `@react-three/fiber`: "^9.1.2"
+- `axios`: "^1.9.0"
+- `cloudinary`: "^2.6.1"
+- `drei`: "^2.2.21"
+- `firebase`: "^11.6.1"
+- `react`: "^19.1.0"
+- `react-colorful`: "^5.6.1"
+- `react-dom`: "^19.1.0"
+- `react-dropzone`: "^14.3.8"
+- `react-router-dom`: "^7.5.3"
+- `react-toastify`: "^11.0.5"
 - `three`: "^0.176.0"
 
 ### Dev Dependencies
 
-- `@eslint/js`: "^9.25.0",
-- `@types/react`: "^19.1.2",
-- `@types/react-dom`: "^19.1.2",
-- `@vitejs/plugin-react`: "^4.4.1",
-- `autoprefixer`: "^10.4.21",
-- `eslint`: "^9.25.0",
-- `eslint-plugin-react-hooks`: "^5.2.0",
-- `eslint-plugin-react-refresh`: "^0.4.19",
-- `globals`: "^16.0.0",
-- `postcss`: "^8.5.3",
-- `tailwindcss`: "^3.4.17",
+- `@eslint/js`: "^9.25.0"
+- `@testing-library/jest-dom`: "^6.6.3"
+- `@types/react`: "^19.1.2"
+- `@types/react-dom`: "^19.1.2"
+- `@vitejs/plugin-react`: "^4.4.1"
+- `autoprefixer`: "^10.4.21"
+- `eslint`: "^9.25.0"
+- `eslint-plugin-react-hooks`: "^5.2.0"
+- `eslint-plugin-react-refresh`: "^0.4.19"
+- `globals`: "^16.0.0"
+- `jsdom`: "^26.1.0"
+- `postcss`: "^8.5.3"
+- `tailwindcss`: "^3.4.17"
 - `vite`: "^6.3.5"
+- `vitest`: "^3.1.3"
 
 ## 🚀 Deployment
 
@@ -144,14 +148,17 @@ npm run dev
    npm run build
    ```
 
-2. **Deploy to Hosting**
+2. **Unit Test Version**
 
-   - Recommended platforms:
-     - Vercel
-     - Netlify
-     - Firebase Hosting
+   ```bash
+      pnpm test:unit
+   ```
 
-   Remember to set environment variables in your hosting platform!
+3. **Integration Test Version**
+
+   ```bash
+      pnpm test:integration
+   ```
 
 ## 🤝 Contributing
 
